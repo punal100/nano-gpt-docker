@@ -1,0 +1,4 @@
+{
+  "model": "nomic-embed-text",
+  "input": "This is a test embedding request"
+}

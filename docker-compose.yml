@@ -1,0 +1,55 @@
+version: "3.8"
+
+services:
+  open-embed-router:
+    build: .
+    container_name: open-embed-router
+    ports:
+      - "9000:9000"
+    environment:
+      - PORT=9000
+      - PROVIDER=${PROVIDER:-openai}
+      - PROVIDER_BASE_URL=${PROVIDER_BASE_URL:-http://host.docker.internal:11434}
+      - API_KEY=${API_KEY}
+      - X_PAYMENT=${X_PAYMENT}
+      - ROUTER_ATTEMPTS=${ROUTER_ATTEMPTS:-3}
+      - ROUTER_BACKOFF_MS=${ROUTER_BACKOFF_MS:-500}
+      - LOG_LEVEL=${LOG_LEVEL:-info}
+      - LOG_DIR=/app/logs
+      - STARTUP_CHECK=${STARTUP_CHECK:-true}
+      - TEST_MODEL=${TEST_MODEL:-nomic-embed-text}
+      - REQUIRE_API_KEY=${REQUIRE_API_KEY:-false}
+      - IGNORE_INCOMING_API_KEY=${IGNORE_INCOMING_API_KEY:-false}
+    volumes:
+      - ./logs:/app/logs
+    restart: unless-stopped
+    networks:
+      - router-network
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "node",
+          "-e",
+          "require('http').get('http://localhost:9000/health', (r) => process.exit(r.statusCode === 200 ? 0 : 1))",
+        ]
+      interval: 30s
+      timeout: 3s
+      start_period: 5s
+      retries: 3
+
+  cloudflared:
+    image: cloudflare/cloudflared:latest
+    container_name: cloudflared
+    command: tunnel --no-autoupdate run --token ${CLOUDFLARE_TUNNEL_TOKEN}
+    restart: unless-stopped
+    networks:
+      - router-network
+    depends_on:
+      - open-embed-router
+
+networks:
+  router-network:
+    driver: bridge

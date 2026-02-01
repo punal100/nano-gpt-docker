@@ -1,0 +1,8 @@
+{
+    "model": "Qwen/Qwen3-Embedding-0.6B",
+    "input": [
+        "First text to embed",
+        "Second text to embed",
+        "Third text to embed"
+    ]
+}

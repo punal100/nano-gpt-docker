@@ -1,0 +1,93 @@
+{
+  "$schema": "https://kilocode.com/schemas/workspace-config.json",
+  "//": "Example Kilo Code workspace configuration for Open Embed Router",
+  "//": "Copy relevant sections to your .vscode/settings.json",
+  "kilo-code.embedder": {
+    "//": "=== LOCAL DEVELOPMENT (HTTP) ===",
+    "//": "Use this configuration when running the router locally with docker-compose.yml",
+    "provider": "openai",
+    "baseUrl": "http://localhost:9000/v1",
+    "model": "nomic-embed-text",
+    "dimensions": 768,
+    "//": "Note: Do NOT set headers here - the router handles authentication via environment variables"
+  },
+  "//": "=== PRODUCTION (HTTPS) ===",
+  "//": "Use this configuration when the router is deployed with HTTPS",
+  "kilo-code.embedder.production": {
+    "provider": "openai",
+    "baseUrl": "https://your-domain.com/v1",
+    "model": "nomic-embed-text",
+    "dimensions": 768
+  },
+  "//": "=== PROVIDER EXAMPLES ===",
+  "//": "Different providers support different models",
+  "kilo-code.embedder.alternatives": {
+    "//": "Ollama - nomic-embed-text (768 dimensions)",
+    "ollama": {
+      "provider": "openai",
+      "baseUrl": "http://localhost:9000/v1",
+      "model": "nomic-embed-text",
+      "dimensions": 768
+    },
+    "//": "Ollama - all-minilm (384 dimensions)",
+    "ollama-minilm": {
+      "provider": "openai",
+      "baseUrl": "http://localhost:9000/v1",
+      "model": "all-minilm",
+      "dimensions": 384
+    },
+    "//": "OpenAI - text-embedding-3-small (1536 dimensions)",
+    "openai": {
+      "provider": "openai",
+      "baseUrl": "http://localhost:9000/v1",
+      "model": "text-embedding-3-small",
+      "dimensions": 1536
+    },
+    "//": "NanoGPT - Qwen3-Embedding-0.6B (1024 dimensions)",
+    "nanogpt": {
+      "provider": "openai",
+      "baseUrl": "http://localhost:9000/v1",
+      "model": "Qwen/Qwen3-Embedding-0.6B",
+      "dimensions": 1024
+    }
+  },
+  "//": "=== QDRANT CONFIGURATION ===",
+  "//": "Configure Qdrant for vector storage",
+  "kilo-code.qdrant": {
+    "url": "http://localhost:6333",
+    "//": "Collection name should match embedding dimensions",
+    "collection": "kilo-embeddings-768"
+  },
+  "//": "=== COMPLETE EXAMPLE ===",
+  "//": "Full configuration for local development",
+  "example.complete": {
+    "kilo-code.embedder": {
+      "provider": "openai",
+      "baseUrl": "http://localhost:9000/v1",
+      "model": "Qwen/Qwen3-Embedding-0.6B",
+      "dimensions": 1024
+    },
+    "kilo-code.qdrant": {
+      "url": "http://localhost:6333",
+      "collection": "kilo-embeddings-1024"
+    }
+  },
+  "//": "=== TROUBLESHOOTING ===",
+  "troubleshooting": {
+    "//": "If embeddings fail:",
+    "//": "1. Verify shim is running: curl http://localhost:9000/health",
+    "//": "2. Check shim logs: docker compose logs -f nanogpt-shim",
+    "//": "3. Verify NanoGPT API key in .env file",
+    "//": "4. Test shim directly with curl (see README.md)",
+    "//": "5. Check Kilo Code output panel for errors"
+  },
+  "//": "=== PERFORMANCE TUNING ===",
+  "performance": {
+    "//": "For better performance:",
+    "//": "1. Use smaller batches (fewer files at once)",
+    "//": "2. Use faster model (0.6B vs 1.5B)",
+    "//": "3. Deploy shim closer to Kilo Code (same network)",
+    "//": "4. Monitor shim logs for retry attempts",
+    "//": "5. Consider parallel processing (future enhancement)"
+  }
+}
